@@ -1,0 +1,10 @@
+# Patterns to ignore when building packaged Helm charts
+.DS_Store
+.git/
+.gitignore
+.helmignore
+# Exclude your CI config and local test files
+.github/
+.gitlab-ci.yml
+*secrets*.yaml
+local-values.yaml

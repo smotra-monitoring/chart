@@ -15,45 +15,45 @@ jobs:
       - name: Fetch Latest Microservice Tags
         id: fetch-tags
         run: |
-          DB_REPO=$(yq eval '.db.image.repository' umbrella/values.yaml)
-          API_REPO=$(yq eval '.api.image.repository' umbrella/values.yaml)
-          OPENAPI_REPO=$(yq eval '.openapi.image.repository' umbrella/values.yaml)
-          FRONTEND_REPO=$(yq eval '.frontend.image.repository' umbrella/values.yaml)
+          FRONTEND_REPO=$(yq eval '.frontend.image.repository' values.yaml)
+          API_REPO=$(yq eval '.api.image.repository' values.yaml)
+          DB_MIGRATION_REPO=$(yq eval '.api.db-migrations.repository' values.yaml)
+          OPENAPI_REPO=$(yq eval '.openapi.image.repository' values.yaml)
 
           # cut the repository name from the full path (e.g., gcr.io/ivankuchin/test-container -> ivankuchin/test-container)
-          DB_REPO=${DB_REPO#*/}
-          API_REPO=${API_REPO#*/}
-          OPENAPI_REPO=${OPENAPI_REPO#*/}
           FRONTEND_REPO=${FRONTEND_REPO#*/}
+          API_REPO=${API_REPO#*/}
+          DB_MIGRATION_REPO=${DB_MIGRATION_REPO#*/}
+          OPENAPI_REPO=${OPENAPI_REPO#*/}
 
-          DB_TAG=$(gh api repos/$DB_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
-          API_TAG=$(gh api repos/$API_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
-          OPENAPI_TAG=$(gh api repos/$OPENAPI_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
           FRONTEND_TAG=$(gh api repos/$FRONTEND_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
+          API_TAG=$(gh api repos/$API_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
+          DB_MIGRATION_TAG=$(gh api repos/$DB_MIGRATION_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
+          OPENAPI_TAG=$(gh api repos/$OPENAPI_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
 
-          echo "db_tag=$DB_TAG" >> $GITHUB_OUTPUT
-          echo "api_tag=$API_TAG" >> $GITHUB_OUTPUT
-          echo "openapi_tag=$OPENAPI_TAG" >> $GITHUB_OUTPUT
           echo "frontend_tag=$FRONTEND_TAG" >> $GITHUB_OUTPUT
+          echo "api_tag=$API_TAG" >> $GITHUB_OUTPUT
+          echo "db_migration_tag=$DB_MIGRATION_TAG" >> $GITHUB_OUTPUT
+          echo "openapi_tag=$OPENAPI_TAG" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update umbrella/values.yaml with New Microservice Versions
+      - name: Update values.yaml with New Microservice Versions
         id: check-updates
         env:
-          NEW_DB: ${{ steps.fetch-tags.outputs.db_tag }}
-          NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
-          NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
           NEW_FRONTEND: ${{ steps.fetch-tags.outputs.frontend_tag }}
+          NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
+          NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
+          NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
         run: |
-          VALUES_FILE="umbrella/values.yaml"
+          VALUES_FILE="values.yaml"
           
-          CURRENT_DB=$(yq eval '.db.image.tag' $VALUES_FILE)
-          CURRENT_API=$(yq eval '.api.image.tag' $VALUES_FILE)
-          CURRENT_OPENAPI=$(yq eval '.openapi.image.tag' $VALUES_FILE)
           CURRENT_FRONTEND=$(yq eval '.frontend.image.tag' $VALUES_FILE)
+          CURRENT_API=$(yq eval '.api.image.tag' $VALUES_FILE)
+          CURRENT_DB_MIGRATION=$(yq eval '.api.db-migrations.image.tag' $VALUES_FILE)
+          CURRENT_OPENAPI=$(yq eval '.openapi.image.tag' $VALUES_FILE)
 
-          if [ "$CURRENT_DB" == "$NEW_DB" ] && [ "$CURRENT_API" == "$NEW_API" ] && [ "$CURRENT_OPENAPI" == "$NEW_OPENAPI" ] && [ "$CURRENT_FRONTEND" == "$NEW_FRONTEND" ]; then
+          if [ "$CURRENT_DB_MIGRATION" == "$NEW_DB_MIGRATION" ] && [ "$CURRENT_API" == "$NEW_API" ] && [ "$CURRENT_OPENAPI" == "$NEW_OPENAPI" ] && [ "$CURRENT_FRONTEND" == "$NEW_FRONTEND" ]; then
             echo "No new versions to update. Exiting."
             echo "update_needed=false" >> $GITHUB_OUTPUT
             exit 0
@@ -61,21 +61,21 @@ jobs:
 
           echo "update_needed=true" >> $GITHUB_OUTPUT
 
-          echo "DB: $CURRENT_DB -> $NEW_DB"
-          echo "API: $CURRENT_API -> $NEW_API"
-          echo "OpenAPI: $CURRENT_OPENAPI -> $NEW_OPENAPI"
           echo "Frontend: $CURRENT_FRONTEND -> $NEW_FRONTEND"
+          echo "API: $CURRENT_API -> $NEW_API"
+          echo "DB Migration: $CURRENT_DB_MIGRATION -> $NEW_DB_MIGRATION"
+          echo "OpenAPI: $CURRENT_OPENAPI -> $NEW_OPENAPI"
 
           # Update values.yaml atomically
-          yq eval -i ".db.image.tag = \"$NEW_DB\"" $VALUES_FILE
-          yq eval -i ".api.image.tag = \"$NEW_API\"" $VALUES_FILE
-          yq eval -i ".openapi.image.tag = \"$NEW_OPENAPI\"" $VALUES_FILE
           yq eval -i ".frontend.image.tag = \"$NEW_FRONTEND\"" $VALUES_FILE
+          yq eval -i ".api.image.tag = \"$NEW_API\"" $VALUES_FILE
+          yq eval -i ".api.db-migrations.image.tag = \"$NEW_DB_MIGRATION\"" $VALUES_FILE
+          yq eval -i ".openapi.image.tag = \"$NEW_OPENAPI\"" $VALUES_FILE
 
       - name: Bump Microservice Chart Versions
         if: steps.check-updates.outputs.update_needed == 'true'
         run: |
-          CHART_FILE="umbrella/Chart.yaml"
+          CHART_FILE="Chart.yaml"
 
           # Bump the chart versions for each microservice
           CURRENT_VERSION=$(yq eval '.version' $CHART_FILE)
@@ -94,9 +94,9 @@ jobs:
       - name: Commit and Push Changes
         if: steps.check-updates.outputs.update_needed == 'true'
         run: |
-          # 5. Commit and push atomically
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -a -m "chore(matrix): release microservice versions (db: $NEW_DB, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND)"
+          git commit -a -m "chore(matrix): release microservice versions (db migration: $NEW_DB_MIGRATION, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND)"
           git push origin master
 
+          
