@@ -1,0 +1,24 @@
+frontend:
+  targetNamespace: test2-www
+  image:
+    repository: ghcr.io/ivankuchin/test-container
+    pullPolicy: IfNotPresent
+    tag: "v0.0.11"
+api:
+  targetNamespace: test2-api
+  image:
+    repository: ghcr.io/ivankuchin/test-container
+    pullPolicy: IfNotPresent
+    tag: "v0.0.11"
+openapi:
+  targetNamespace: test2-openapi
+  image:
+    repository: ghcr.io/ivankuchin/test-container
+    pullPolicy: IfNotPresent
+    tag: "v0.0.11"
+db:
+  targetNamespace: test2-db
+  image:
+    repository: ghcr.io/ivankuchin/test-container
+    pullPolicy: IfNotPresent
+    tag: "v0.0.11"

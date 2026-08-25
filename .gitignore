@@ -1,0 +1,37 @@
+# ==========================================
+# Helm Specific
+# ==========================================
+# Ignore packaged charts (created via 'helm package')
+*.tgz
+
+# Ignore downloaded chart dependencies 
+# (Only if you prefer fetching them during CI/CD via 'helm dependency update')
+charts/
+# Note: Un-comment the line below if you prefer to commit sub-charts manually
+# !charts/
+
+# Ignore the Helm lock file if you handle dependencies dynamically
+Chart.lock
+
+# ==========================================
+# Secret & Local Values Management
+# ==========================================
+# Ignore local or custom values files used for testing/development
+*secrets*.yaml
+*secret*.yaml
+my-values.yaml
+local-values.yaml
+.env
+
+# ==========================================
+# OS & IDE Files
+# ==========================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
