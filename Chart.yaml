@@ -6,7 +6,7 @@ version: 0.0.1
 
 dependencies:
   - name: frontend
-    version: 0.3.5
+    version: 0.0.1
     repository: "file://frontend"
   - name: api
     version: 0.2.4
