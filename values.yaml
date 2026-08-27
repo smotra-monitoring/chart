@@ -7,18 +7,19 @@ frontend:
 
 api:
   targetNamespace: api-smotra-net
-  image:
-    repository: ghcr.io/ivankuchin/test-container
-    pullPolicy: IfNotPresent
-    tag: "v0.0.1"
-  db-migrations:
-    repository: ghcr.io/ivankuchin/test-container
-    pullPolicy: IfNotPresent
-    tag: "v0.0.1"
-  db:
-    repository: timescale/timescaledb
-    pullPolicy: IfNotPresent
-    tag: "latest-pg16"
+  images:
+    api:
+      repository: ghcr.io/ivankuchin/test-container
+      pullPolicy: IfNotPresent
+      tag: "v0.0.1"
+    db-migrations:
+      repository: ghcr.io/ivankuchin/test-container
+      pullPolicy: IfNotPresent
+      tag: "v0.0.1"
+    db:
+      repository: timescale/timescaledb
+      pullPolicy: IfNotPresent
+      tag: "latest-pg16"
 
 openapi:
   targetNamespace: openapi-smotra-net
