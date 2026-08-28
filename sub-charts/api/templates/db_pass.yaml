@@ -1,4 +1,4 @@
-{{- $secretName := printf "%s-secrets" .Release.Name -}}
+{{- $secretName := "db-password" -}}
 {{- $existingSecret := lookup "v1" "Secret" .Values.targetNamespace $secretName -}}
 apiVersion: v1
 kind: Secret
