@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "test.fullname" . }}-db
+  namespace: {{ .Values.targetNamespace }}
+  labels:
+    {{- include "test.labels-db" . | nindent 4 }}
+  annotations:
+    # 1. Make PostgreSQL a pre-install/pre-upgrade hook
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    
+    # 2. Give it a weight of -10 so it runs BEFORE the migration job (-5)
+    "helm.sh/hook-weight": "-10"
+    
+    # 3. Clean up the old hook on next run, but do NOT delete it on success/uninstall 
+    # (crucial for protecting your database persistent volumes)
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  serviceName: {{ include "test.fullname" . }}-db
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "test.selectorLabels-db" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "test.selectorLabels-db" . | nindent 8 }}
+    spec:
+      containers:
+        - name: postgres
+          image: "timescale/timescaledb:latest-pg16"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: "app_db"
+            - name: POSTGRES_USER
+              value: "app_user"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: database-password
+          resources:
+            limits:
+              cpu: "1"
+              memory: "8Gi"
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      {{- if .Values.persistence.existingClaim }}
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
+      {{- end }}
+  {{- if not .Values.persistence.existingClaim }}
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: 
+          - {{ .Values.persistence.accessMode | default "ReadWriteOnce" }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | default "10Gi" }}
+  {{- end }}

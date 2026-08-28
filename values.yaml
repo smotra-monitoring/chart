@@ -1,29 +1,32 @@
 frontend:
   targetNamespace: www-smotra-net
   image:
-    repository: ghcr.io/ivankuchin/test-container
+    repository: ghcr.io/smotra-monitoring/frontend
     pullPolicy: IfNotPresent
-    tag: "v0.0.1"
+    tag: "v0.1.1"
 
 api:
   targetNamespace: api-smotra-net
   images:
     api:
-      repository: ghcr.io/ivankuchin/test-container
+      repository: ghcr.io/smotra-monitoring/api-server
       pullPolicy: IfNotPresent
-      tag: "v0.0.1"
+      tag: "v0.2.5"
     db-migrations:
-      repository: ghcr.io/ivankuchin/test-container
+      repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
-      tag: "v0.0.1"
+      tag: "v0.0.3"
     db:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
       tag: "latest-pg16"
+  persistence:
+      fake: value
+  #   existingClaim: "postgres-data-pvc"
 
 openapi:
   targetNamespace: openapi-smotra-net
   image:
-    repository: ghcr.io/ivankuchin/test-container
+    repository: ghcr.io/smotra-monitoring/openapi
     pullPolicy: IfNotPresent
-    tag: "v0.0.1"
+    tag: "v0.1.0"

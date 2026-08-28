@@ -15,11 +15,7 @@ If release name contains chart name it will be used as a full name.
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- $name | trunc 63 | trimSuffix "-" -}}
 {{- end }}
 {{- end }}
 
@@ -42,12 +38,25 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "test.labels-db" -}}
+helm.sh/chart: {{ include "test.chart" . }}
+{{ include "test.selectorLabels-db" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
 {{/*
 Selector labels
 */}}
 {{- define "test.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "test.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- define "test.selectorLabels-db" -}}
+app.kubernetes.io/name: {{ include "test.name" . }}-db
+app.kubernetes.io/instance: {{ .Release.Name }}-db
 {{- end }}
 
 {{/*

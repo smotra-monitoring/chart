@@ -1,0 +1,24 @@
+{{- $secretName := printf "%s-secrets" .Release.Name -}}
+{{- $existingSecret := lookup "v1" "Secret" .Values.targetNamespace $secretName -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Values.targetNamespace }}
+  labels:
+    {{- include "test.labels" . | nindent 4 }}
+  annotations:
+    # 1. Make PostgreSQL a pre-install/pre-upgrade hook
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    
+    # 2. Give it a weight of -10 so it runs BEFORE the migration job (-5)
+    "helm.sh/hook-weight": "-11"
+    
+    # Keeps the secret intact if you run 'helm uninstall' 
+    "helm.sh/resource-policy": "keep"
+    
+    # Only delete on failure; preserve existing secret so the password survives upgrades
+    "helm.sh/hook-delete-policy": "hook-failed"
+type: Opaque
+data:
+  database-password: {{ if and $existingSecret $existingSecret.data }}{{ index $existingSecret.data "database-password" }}{{ else }}{{ randAlphaNum 32 | b64enc }}{{ end }}

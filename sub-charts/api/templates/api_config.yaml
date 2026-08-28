@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "test.fullname" . }}-config
+  labels:
+    {{- include "test.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+    server:
+        host: 0.0.0.0
+        port: 8080
+        read_timeout: 30s
+        write_timeout: 30s
+        idle_timeout: 2m0s
+        shutdown_timeout: 30s
+        environment: production
+    database_type: postgres
+    postgres_config:
+        config:
+            type: postgres
+            maxopenconns: 100
+            maxidleconns: 20
+            connmaxlifetime: 15m0s
+            connmaxidletime: 5m0s
+        host: {{ include "test.fullname" . }}
+        port: 5432
+        username: app_user
+        password: "this is a placeholder, the actual password is stored in a Kubernetes secret"
+        database: app_db
+        sslmode: require
+    logging:
+        level: warn
+        format: json
+    auth:
+        frontend_callback_url: ""
+        server_callback_url: ""
+        providers: {}
+    agent:
+        claim_token_expiration_hours: 24
+        server_url: https://smotra.net
+        claim_poll_initial_interval_secs: 5
+        claim_poll_increment_secs: 5
+        claim_poll_max_interval_secs: 30
+    cors:
+        origin: https://www.smotra.net
