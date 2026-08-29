@@ -38,25 +38,12 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{- define "test.labels-db" -}}
-helm.sh/chart: {{ include "test.chart" . }}
-{{ include "test.selectorLabels-db" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
 {{/*
 Selector labels
 */}}
 {{- define "test.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "test.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-{{- define "test.selectorLabels-db" -}}
-app.kubernetes.io/name: {{ include "test.name" . }}-db
-app.kubernetes.io/instance: {{ .Release.Name }}-db
 {{- end }}
 
 {{/*

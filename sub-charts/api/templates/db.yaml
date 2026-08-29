@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "test.fullname" . }}-db
+  name: db
   namespace: {{ .Values.targetNamespace }}
   labels:
     {{- include "test.labels-db" . | nindent 4 }}
@@ -16,7 +16,7 @@ metadata:
     # (crucial for protecting your database persistent volumes)
     "helm.sh/hook-delete-policy": "before-hook-creation"
 spec:
-  serviceName: {{ include "test.fullname" . }}-db
+  serviceName: db
   replicas: 1
   selector:
     matchLabels:

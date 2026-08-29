@@ -33,9 +33,22 @@ data:
         level: warn
         format: json
     auth:
-        frontend_callback_url: ""
-        server_callback_url: ""
-        providers: {}
+        frontend_callback_url: https://www.smotra.net/auth/callback
+        server_callback_url: https://api.smotra.net/v1/auth/oauth2/callback
+        providers:
+            auth0:
+                type: oidc
+                client_id: ZPsNwOIn7DiPHEjhbfy8zkXDj1hl0BD6
+                issuer_url: https://dev-7ffv2mlfow4w0de7.us.auth0.com/
+            # Example: configure GitHub for local dev
+            # github:
+            #     type: static
+            #     client_id: your-github-client-id
+            # Example: configure Google OIDC
+            # google:
+            #     type: oidc
+            #     issuer_url: https://accounts.google.com
+            #     client_id: your-google-client-id
     agent:
         claim_token_expiration_hours: 24
         server_url: https://smotra.net
