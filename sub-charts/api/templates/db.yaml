@@ -5,16 +5,6 @@ metadata:
   namespace: {{ .Values.targetNamespace }}
   labels:
     {{- include "test.labels-db" . | nindent 4 }}
-  annotations:
-    # 1. Make PostgreSQL a pre-install/pre-upgrade hook
-    "helm.sh/hook": "pre-install,pre-upgrade"
-    
-    # 2. Give it a weight of -10 so it runs BEFORE the migration job (-5)
-    "helm.sh/hook-weight": "-10"
-    
-    # 3. Clean up the old hook on next run, but do NOT delete it on success/uninstall 
-    # (crucial for protecting your database persistent volumes)
-    "helm.sh/hook-delete-policy": "before-hook-creation"
 spec:
   serviceName: db
   replicas: 1
@@ -35,9 +25,9 @@ spec:
               name: postgres
           env:
             - name: POSTGRES_DB
-              value: "app_db"
+              value: "{{ .Values.db.database }}"
             - name: POSTGRES_USER
-              value: "app_user"
+              value: "{{ .Values.db.username }}"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:

@@ -23,12 +23,12 @@ data:
             maxidleconns: 20
             connmaxlifetime: 15m0s
             connmaxidletime: 5m0s
-        host: {{ include "test.fullname" . }}
-        port: 5432
-        username: app_user
-        password: "this is a placeholder, the actual password is stored in a Kubernetes secret"
-        database: app_db
-        sslmode: require
+        host: {{ .Values.db.host }}
+        port: {{ .Values.db.port }}
+        username: {{ .Values.db.username }}
+        password: {{ .Values.db.password }}
+        database: {{ .Values.db.database }}
+        sslmode: {{ .Values.db.sslmode }}
     logging:
         level: warn
         format: json

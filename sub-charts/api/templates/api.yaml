@@ -33,6 +33,17 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: wait-for-db
+          image: postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h {{ .Values.db.host }} -p {{ .Values.db.port }} -U {{ .Values.db.username }}; do
+                echo "Waiting for database ({{ .Values.db.host }}) to become available..."
+                sleep 2
+              done 
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}

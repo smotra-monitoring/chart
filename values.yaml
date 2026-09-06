@@ -20,6 +20,13 @@ api:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
       tag: "latest-pg16"
+  db:
+    host: db-0.db
+    port: 5432
+    username: postgres
+    password: "this_is_a_placeholder,_the_actual_password_is_stored_in_a_Kubernetes_secret"
+    database: postgres
+    sslmode: disable
   persistence:
       fake: value
   #   existingClaim: "postgres-data-pvc"
