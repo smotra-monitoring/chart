@@ -43,7 +43,26 @@ spec:
               until pg_isready -h {{ .Values.db.host }} -p {{ .Values.db.port }} -U {{ .Values.db.username }}; do
                 echo "Waiting for database ({{ .Values.db.host }}) to become available..."
                 sleep 2
-              done 
+              done
+        - name: run-migrations
+          image: "{{ .Values.images.db_migrations.repository }}:{{ .Values.images.db_migrations.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.db_migrations.pullPolicy }}
+          env:
+            - name: DATABASE_HOST
+              value: "{{ .Values.db.host }}"
+            - name: DATABASE_PORT
+              value: "{{ .Values.db.port }}"
+            - name: DATABASE_USER
+              value: "{{ .Values.db.username }}"
+            - name: DATABASE_NAME
+              value: "{{ .Values.db.database }}"
+            - name: DATABASE_SSLMODE
+              value: "{{ .Values.db.sslmode }}"
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: database-password
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
