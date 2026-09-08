@@ -4,12 +4,12 @@ metadata:
   name: api
   namespace: {{ .Values.targetNamespace }}
   labels:
-    {{- include "test.labels-db" . | nindent 4 }}
+    {{- include "test.labels-api" . | nindent 4 }}
 spec:
   clusterIP: None
   selector:
-    {{- include "test.selectorLabels-db" . | nindent 4 }}
+    {{- include "test.selectorLabels-api" . | nindent 4 }}
   ports:
-    - port: 8080
+    - port: {{ .Values.service.port }}
       name: http
-      targetPort: http
+      targetPort: {{ .Values.service.targetPort }}
