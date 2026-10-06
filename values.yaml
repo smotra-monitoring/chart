@@ -15,7 +15,7 @@ api:
       repository: ghcr.io/smotra-monitoring/api-server
       pullPolicy: IfNotPresent
       tag: "v0.4.0"
-    db_migrations:
+    db-migrations:
       repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
       tag: "v0.0.1"
