@@ -4,6 +4,9 @@ frontend:
     repository: ghcr.io/smotra-monitoring/frontend
     pullPolicy: IfNotPresent
     tag: "v0.1.1"
+  httpRoute:
+    hostnames:
+    - www.smotra.net
 
 api:
   targetNamespace: api-smotra-net
@@ -20,6 +23,10 @@ api:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
       tag: "latest-pg16"
+
+  httpRoute:
+    hostnames:
+    - api.smotra.net
   db:
     host: db-0.db
     port: 5432
@@ -37,3 +44,6 @@ openapi:
     repository: ghcr.io/smotra-monitoring/openapi
     pullPolicy: IfNotPresent
     tag: "v0.1.0"
+  httpRoute:
+    hostnames:
+    - openapi.smotra.net
