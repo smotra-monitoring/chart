@@ -17,7 +17,7 @@ jobs:
         run: |
           FRONTEND_REPO=$(yq eval '.frontend.image.repository' values.yaml)
           API_REPO=$(yq eval '.api.images.api.repository' values.yaml)
-          DB_MIGRATION_REPO=$(yq eval '.api.images.db-migrations.repository' values.yaml)
+          DB_MIGRATION_REPO=$(yq eval '.api.images.dbMigrations.repository' values.yaml)
           OPENAPI_REPO=$(yq eval '.openapi.image.repository' values.yaml)
 
           # cut the repository name from the full path (e.g., gcr.io/ivankuchin/test-container -> ivankuchin/test-container)
@@ -50,7 +50,7 @@ jobs:
           
           CURRENT_FRONTEND=$(yq eval '.frontend.image.tag' $VALUES_FILE)
           CURRENT_API=$(yq eval '.api.images.api.tag' $VALUES_FILE)
-          CURRENT_DB_MIGRATION=$(yq eval '.api.images.db-migrations.tag' $VALUES_FILE)
+          CURRENT_DB_MIGRATION=$(yq eval '.api.images.dbMigrations.tag' $VALUES_FILE)
           CURRENT_OPENAPI=$(yq eval '.openapi.image.tag' $VALUES_FILE)
 
           if [ "$CURRENT_DB_MIGRATION" == "$NEW_DB_MIGRATION" ] && [ "$CURRENT_API" == "$NEW_API" ] && [ "$CURRENT_OPENAPI" == "$NEW_OPENAPI" ] && [ "$CURRENT_FRONTEND" == "$NEW_FRONTEND" ]; then
@@ -69,7 +69,7 @@ jobs:
           # Update values.yaml atomically
           yq eval -i ".frontend.image.tag = \"$NEW_FRONTEND\"" $VALUES_FILE
           yq eval -i ".api.images.api.tag = \"$NEW_API\"" $VALUES_FILE
-          yq eval -i ".api.images.db-migrations.tag = \"$NEW_DB_MIGRATION\"" $VALUES_FILE
+          yq eval -i ".api.images.dbMigrations.tag = \"$NEW_DB_MIGRATION\"" $VALUES_FILE
           yq eval -i ".openapi.image.tag = \"$NEW_OPENAPI\"" $VALUES_FILE
 
       - name: Bump Microservice Chart Versions

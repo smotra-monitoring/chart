@@ -6,10 +6,10 @@ version: 0.0.12
 dependencies:
   - name: frontend
     version: 0.0.1
-    repository: "file://sub-charts/frontend"
+    repository: "file://./sub-charts/frontend"
   - name: api
     version: 0.2.5
-    repository: "file://sub-charts/api"
+    repository: "file://./sub-charts/api"
   - name: openapi
     version: 0.7.9
-    repository: "file://sub-charts/openapi"
+    repository: "file://./sub-charts/openapi"

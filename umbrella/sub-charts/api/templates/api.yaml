@@ -45,8 +45,8 @@ spec:
                 sleep 2
               done
         - name: run-migrations
-          image: "{{ .Values.images.db-migrations.repository }}:{{ .Values.images.db-migrations.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.images.db-migrations.pullPolicy }}
+          image: "{{ .Values.images.dbMigrations.repository }}:{{ .Values.images.dbMigrations.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.dbMigrations.pullPolicy }}
           env:
             - name: DATABASE_HOST
               value: "{{ .Values.db.host }}"
