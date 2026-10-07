@@ -6,8 +6,7 @@ frontend:
     tag: "v0.1.1"
   httpRoute:
     hostnames:
-    - www.smotra.net
-
+      - www.smotra.net
 api:
   targetNamespace: api-smotra-net
   images:
@@ -18,15 +17,14 @@ api:
     db-migrations:
       repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
-      tag: "v0.0.1"
+      tag: "v0.0.4"
     db:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
       tag: "latest-pg16"
-
   httpRoute:
     hostnames:
-    - api.smotra.net
+      - api.smotra.net
   db:
     host: db-0.db
     port: 5432
@@ -35,9 +33,8 @@ api:
     database: postgres
     sslmode: disable
   persistence:
-      fake: value
-  #   existingClaim: "postgres-data-pvc"
-
+    fake: value
+    #   existingClaim: "postgres-data-pvc"
 openapi:
   targetNamespace: openapi-smotra-net
   image:
@@ -46,4 +43,4 @@ openapi:
     tag: "v0.1.0"
   httpRoute:
     hostnames:
-    - openapi.smotra.net
+      - openapi.smotra.net

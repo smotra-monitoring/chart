@@ -2,8 +2,7 @@ apiVersion: v2
 name: smotra
 description: Smotra-monitoring umbrella chart
 type: application
-version: 0.0.11
-
+version: 0.0.12
 dependencies:
   - name: frontend
     version: 0.0.1
