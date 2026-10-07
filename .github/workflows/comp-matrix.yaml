@@ -93,6 +93,11 @@ jobs:
 
       - name: Commit and Push Changes
         if: steps.check-updates.outputs.update_needed == 'true'
+        env:
+          NEW_FRONTEND: ${{ steps.fetch-tags.outputs.frontend_tag }}
+          NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
+          NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
+          NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
