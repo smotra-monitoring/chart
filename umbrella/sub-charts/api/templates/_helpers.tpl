@@ -46,7 +46,6 @@ helm.sh/chart: {{ include "test.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/component: db
 {{- end }}
 
 {{- define "test.labels-api" -}}
@@ -56,7 +55,6 @@ helm.sh/chart: {{ include "test.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/component: api
 {{- end }}
 
 
