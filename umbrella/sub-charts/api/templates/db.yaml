@@ -24,6 +24,10 @@ spec:
             - containerPort: 5432
               name: postgres
           env:
+            # Reason for setting PGDATA is volume accolated by Longhorn contains lost+found directory,
+            # which causes PostgreSQL to fail on startup, due to PGDATA folder is not empty
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_DB
               value: "{{ .Values.db.database }}"
             - name: POSTGRES_USER
