@@ -1,12 +1,12 @@
 frontend:
-  targetNamespace: www-smotra-net
+  targetNamespace: frontend-smotra-net
   image:
     repository: ghcr.io/smotra-monitoring/frontend
     pullPolicy: IfNotPresent
     tag: "v0.1.1"
   httpRoute:
     hostnames:
-      - www.smotra.net
+      - frontend.smotra.net
 api:
   targetNamespace: api-smotra-net
   images:
