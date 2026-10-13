@@ -11,5 +11,5 @@ dependencies:
     version: 0.2.5
     repository: "file://./sub-charts/api"
   - name: openapi
-    version: 0.7.9
+    version: 0.8.0
     repository: "file://./sub-charts/openapi"
