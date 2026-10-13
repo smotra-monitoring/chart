@@ -18,8 +18,8 @@ spec:
   - backendRefs:
     - group: ""
       kind: Service
-      name: app
-      port: 80
+      name: {{ include "test.fullname" . }}
+      port: {{ .Values.service.port }}
       weight: 1
     matches:
     - path:
