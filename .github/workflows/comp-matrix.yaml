@@ -15,10 +15,12 @@ jobs:
       - name: Fetch Latest Microservice Tags
         id: fetch-tags
         run: |
-          FRONTEND_REPO=$(yq eval '.frontend.image.repository' values.yaml)
-          API_REPO=$(yq eval '.api.images.api.repository' values.yaml)
-          DB_MIGRATION_REPO=$(yq eval '.api.images.dbMigrations.repository' values.yaml)
-          OPENAPI_REPO=$(yq eval '.openapi.image.repository' values.yaml)
+          VALUES_FILE="./umbrella/values.yaml"
+
+          FRONTEND_REPO=$(yq eval '.frontend.image.repository' $VALUES_FILE)
+          API_REPO=$(yq eval '.api.images.api.repository' $VALUES_FILE)
+          DB_MIGRATION_REPO=$(yq eval '.api.images.dbMigrations.repository' $VALUES_FILE)
+          OPENAPI_REPO=$(yq eval '.openapi.image.repository' $VALUES_FILE)
 
           # cut the repository name from the full path (e.g., gcr.io/ivankuchin/test-container -> ivankuchin/test-container)
           FRONTEND_REPO=${FRONTEND_REPO#*/}
@@ -46,7 +48,7 @@ jobs:
           NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
           NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
         run: |
-          VALUES_FILE="values.yaml"
+          VALUES_FILE="./umbrella/values.yaml"
           
           CURRENT_FRONTEND=$(yq eval '.frontend.image.tag' $VALUES_FILE)
           CURRENT_API=$(yq eval '.api.images.api.tag' $VALUES_FILE)
@@ -75,7 +77,7 @@ jobs:
       - name: Bump Microservice Chart Versions
         if: steps.check-updates.outputs.update_needed == 'true'
         run: |
-          CHART_FILE="Chart.yaml"
+          CHART_FILE="./umbrella/Chart.yaml"
 
           # Bump the chart versions for each microservice
           CURRENT_VERSION=$(yq eval '.version' $CHART_FILE)
