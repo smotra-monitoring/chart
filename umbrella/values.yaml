@@ -13,11 +13,11 @@ api:
     api:
       repository: ghcr.io/smotra-monitoring/api-server
       pullPolicy: IfNotPresent
-      tag: "v0.4.0"
+      tag: "v0.4.1"
     dbMigrations:
       repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
-      tag: "v0.0.4"
+      tag: "v0.0.5"
     db:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
@@ -40,7 +40,7 @@ openapi:
   image:
     repository: ghcr.io/smotra-monitoring/openapi
     pullPolicy: IfNotPresent
-    tag: "v0.1.0"
+    tag: "v0.1.1"
   httpRoute:
     hostnames:
       - openapi.smotra.net
