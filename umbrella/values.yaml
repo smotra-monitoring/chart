@@ -17,7 +17,7 @@ api:
     dbMigrations:
       repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
-      tag: "v0.0.5"
+      tag: "v0.0.7"
     db:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
