@@ -75,6 +75,7 @@ jobs:
           yq eval -i ".openapi.image.tag = \"$NEW_OPENAPI\"" $VALUES_FILE
 
       - name: Bump Microservice Chart Versions
+        id: bump-chart
         if: steps.check-updates.outputs.update_needed == 'true'
         run: |
           CHART_FILE="./umbrella/Chart.yaml"
@@ -92,6 +93,8 @@ jobs:
           echo "Bumping umbrella chart version: $CURRENT_VERSION -> $NEW_VERSION"
 
           yq eval -i ".version = \"$NEW_VERSION\"" $CHART_FILE
+          
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit and Push Changes
         if: steps.check-updates.outputs.update_needed == 'true'
@@ -100,8 +103,9 @@ jobs:
           NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
           NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
           NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
+          NEW_VERSION: ${{ steps.bump-chart.outputs.new_version }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -a -m "chore(matrix): release microservice versions (db migration: $NEW_DB_MIGRATION, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND)"
+          git commit -a -m "chore(matrix): release helm v$NEW_VERSION (db migration: $NEW_DB_MIGRATION, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND)"
           git push origin master
