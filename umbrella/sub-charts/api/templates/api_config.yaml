@@ -30,7 +30,7 @@ data:
         database: {{ .Values.db.database }}
         sslmode: {{ .Values.db.sslmode }}
     logging:
-        level: warn
+        level: info
         format: json
     auth:
         frontend_callback_url: https://www.smotra.net/auth/callback
