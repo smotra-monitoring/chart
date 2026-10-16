@@ -13,7 +13,7 @@ api:
     api:
       repository: ghcr.io/smotra-monitoring/api-server
       pullPolicy: IfNotPresent
-      tag: "v0.4.1"
+      tag: "v0.4.2"
     dbMigrations:
       repository: ghcr.io/smotra-monitoring/db
       pullPolicy: IfNotPresent
