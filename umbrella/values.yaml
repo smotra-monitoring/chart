@@ -22,6 +22,10 @@ api:
       repository: timescale/timescaledb
       pullPolicy: IfNotPresent
       tag: "latest-pg16"
+    http_limiter:
+      repository: ghcr.io/smotra-monitoring/http-limiter
+      pullPolicy: IfNotPresent
+      tag: "v0.3.1"
   httpRoute:
     hostnames:
       - api.smotra.net
@@ -35,6 +39,10 @@ api:
   persistence:
     fake: value
     #   existingClaim: "postgres-data-pvc"
+  http_limiter:
+    httpRoute:
+      hostnames:
+        - http-limiter.smotra.net
 openapi:
   targetNamespace: openapi-smotra-net
   image:

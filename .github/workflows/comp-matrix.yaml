@@ -21,22 +21,26 @@ jobs:
           API_REPO=$(yq eval '.api.images.api.repository' $VALUES_FILE)
           DB_MIGRATION_REPO=$(yq eval '.api.images.dbMigrations.repository' $VALUES_FILE)
           OPENAPI_REPO=$(yq eval '.openapi.image.repository' $VALUES_FILE)
+          HTTP_LIMITER_REPO=$(yq eval '.api.images.http_limiter.repository' $VALUES_FILE)
 
           # cut the repository name from the full path (e.g., gcr.io/ivankuchin/test-container -> ivankuchin/test-container)
           FRONTEND_REPO=${FRONTEND_REPO#*/}
           API_REPO=${API_REPO#*/}
           DB_MIGRATION_REPO=${DB_MIGRATION_REPO#*/}
           OPENAPI_REPO=${OPENAPI_REPO#*/}
+          HTTP_LIMITER_REPO=${HTTP_LIMITER_REPO#*/}
 
           FRONTEND_TAG=$(gh api repos/$FRONTEND_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
           API_TAG=$(gh api repos/$API_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
           DB_MIGRATION_TAG=$(gh api repos/$DB_MIGRATION_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
           OPENAPI_TAG=$(gh api repos/$OPENAPI_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
+          HTTP_LIMITER_TAG=$(gh api repos/$HTTP_LIMITER_REPO/tags --jq '.[].name' | sort -V | tail -n 1)
 
           echo "frontend_tag=$FRONTEND_TAG" >> $GITHUB_OUTPUT
           echo "api_tag=$API_TAG" >> $GITHUB_OUTPUT
           echo "db_migration_tag=$DB_MIGRATION_TAG" >> $GITHUB_OUTPUT
           echo "openapi_tag=$OPENAPI_TAG" >> $GITHUB_OUTPUT
+          echo "http_limiter_tag=$HTTP_LIMITER_TAG" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -47,6 +51,7 @@ jobs:
           NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
           NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
           NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
+          NEW_HTTP_LIMITER: ${{ steps.fetch-tags.outputs.http_limiter_tag }}
         run: |
           VALUES_FILE="./umbrella/values.yaml"
           
@@ -54,8 +59,9 @@ jobs:
           CURRENT_API=$(yq eval '.api.images.api.tag' $VALUES_FILE)
           CURRENT_DB_MIGRATION=$(yq eval '.api.images.dbMigrations.tag' $VALUES_FILE)
           CURRENT_OPENAPI=$(yq eval '.openapi.image.tag' $VALUES_FILE)
+          CURRENT_HTTP_LIMITER=$(yq eval '.api.images.http_limiter.tag' $VALUES_FILE)
 
-          if [ "$CURRENT_DB_MIGRATION" == "$NEW_DB_MIGRATION" ] && [ "$CURRENT_API" == "$NEW_API" ] && [ "$CURRENT_OPENAPI" == "$NEW_OPENAPI" ] && [ "$CURRENT_FRONTEND" == "$NEW_FRONTEND" ]; then
+          if [ "$CURRENT_DB_MIGRATION" == "$NEW_DB_MIGRATION" ] && [ "$CURRENT_API" == "$NEW_API" ] && [ "$CURRENT_OPENAPI" == "$NEW_OPENAPI" ] && [ "$CURRENT_FRONTEND" == "$NEW_FRONTEND" ] && [ "$CURRENT_HTTP_LIMITER" == "$NEW_HTTP_LIMITER" ]; then
             echo "No new versions to update. Exiting."
             echo "update_needed=false" >> $GITHUB_OUTPUT
             exit 0
@@ -67,11 +73,13 @@ jobs:
           echo "API: $CURRENT_API -> $NEW_API"
           echo "DB Migration: $CURRENT_DB_MIGRATION -> $NEW_DB_MIGRATION"
           echo "OpenAPI: $CURRENT_OPENAPI -> $NEW_OPENAPI"
+          echo "HTTP Limiter: $CURRENT_HTTP_LIMITER -> $NEW_HTTP_LIMITER"
 
           # Update values.yaml atomically
           yq eval -i ".frontend.image.tag = \"$NEW_FRONTEND\"" $VALUES_FILE
           yq eval -i ".api.images.api.tag = \"$NEW_API\"" $VALUES_FILE
           yq eval -i ".api.images.dbMigrations.tag = \"$NEW_DB_MIGRATION\"" $VALUES_FILE
+          yq eval -i ".api.images.http_limiter.tag = \"$NEW_HTTP_LIMITER\"" $VALUES_FILE
           yq eval -i ".openapi.image.tag = \"$NEW_OPENAPI\"" $VALUES_FILE
 
       - name: Bump Microservice Chart Versions
@@ -103,9 +111,10 @@ jobs:
           NEW_API: ${{ steps.fetch-tags.outputs.api_tag }}
           NEW_DB_MIGRATION: ${{ steps.fetch-tags.outputs.db_migration_tag }}
           NEW_OPENAPI: ${{ steps.fetch-tags.outputs.openapi_tag }}
+          NEW_HTTP_LIMITER: ${{ steps.fetch-tags.outputs.http_limiter_tag }}
           NEW_VERSION: ${{ steps.bump-chart.outputs.new_version }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -a -m "chore(matrix): release helm v$NEW_VERSION (db migration: $NEW_DB_MIGRATION, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND)"
+          git commit -a -m "chore(matrix): release helm v$NEW_VERSION (db migration: $NEW_DB_MIGRATION, api: $NEW_API, openapi: $NEW_OPENAPI, frontend: $NEW_FRONTEND, http limiter: $NEW_HTTP_LIMITER)"
           git push origin master

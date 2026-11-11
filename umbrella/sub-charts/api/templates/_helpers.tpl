@@ -57,6 +57,15 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "test.labels-http-limiter" -}}
+helm.sh/chart: {{ include "test.chart" . }}
+{{ include "test.selectorLabels-http-limiter" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
 
 {{/*
 Selector labels
@@ -76,6 +85,12 @@ app.kubernetes.io/component: api
 app.kubernetes.io/name: {{ include "test.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: db
+{{- end }}
+
+{{- define "test.selectorLabels-http-limiter" -}}
+app.kubernetes.io/name: {{ include "test.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/component: http-limiter
 {{- end }}
 
 

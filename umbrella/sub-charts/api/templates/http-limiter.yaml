@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-limiter
+  namespace: {{ .Values.targetNamespace }}
+  labels:
+    {{- include "test.labels-http-limiter" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "test.selectorLabels-http-limiter" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "test.selectorLabels-http-limiter" . | nindent 8 }}
+    spec:
+      containers:
+        - name: http-limiter
+          image: "{{ .Values.images.http_limiter.repository }}:{{ .Values.images.http_limiter.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+              name: http-limiter
+          env:
+            - name: HTTP_LIMITER_PORT
+              value: "8082"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
