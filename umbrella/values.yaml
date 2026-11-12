@@ -25,7 +25,7 @@ api:
     http_limiter:
       repository: ghcr.io/smotra-monitoring/http-limiter
       pullPolicy: IfNotPresent
-      tag: "v0.3.1"
+      tag: "v0.3.6"
   httpRoute:
     hostnames:
       - api.smotra.net
@@ -48,7 +48,7 @@ openapi:
   image:
     repository: ghcr.io/smotra-monitoring/openapi
     pullPolicy: IfNotPresent
-    tag: "v0.1.1"
+    tag: "v0.2.0"
   httpRoute:
     hostnames:
       - openapi.smotra.net
